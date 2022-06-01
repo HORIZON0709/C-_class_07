@@ -12,6 +12,7 @@
 #include "character.h"
 
 #include <stdio.h>
+#include <time.h>
 #include <stdlib.h>
 #include <assert.h>
 
@@ -38,6 +39,7 @@ namespace
 void Process();
 PROCESS SelectProcess();
 void Battle(CCharacter* pWarrior,CCharacter* pWizard);
+void Release(CCharacter* pWarrior, CCharacter* pWizard);
 }// namespaceはここまで
 
 //===================================================
@@ -45,6 +47,9 @@ void Battle(CCharacter* pWarrior,CCharacter* pWizard);
 //===================================================
 void main(void)
 {
+	//乱数
+	srand((unsigned)time(NULL));
+
 	//処理を実行する
 	Process();
 
@@ -84,36 +89,25 @@ void Process()
 		switch (process)
 		{
 		case PROCESS::CREATE: /* 生成 */
-
-			if (apCharacter[nWarrior] != nullptr)
-			{//NULLチェック
-				//メモリの解放
-				delete apCharacter[nWarrior];
-				apCharacter[nWarrior] = nullptr;
-			}
-
-			if (apCharacter[nWizard] != nullptr)
-			{//NULLチェック
-				//メモリの解放
-				delete apCharacter[nWizard];
-				apCharacter[nWizard] = nullptr;
-			}
-
-			//生成(この時にステータスもランダムで設定)
 			apCharacter[nWarrior] = CCharacter::Create(CCharacter::JOB::WARRIOR);	//戦士
 			apCharacter[nWizard] = CCharacter::Create(CCharacter::JOB::WIZARD);		//魔法使い
 			break;
 	
 		case PROCESS::BATTLE: /* 戦闘 */
-			Battle(apCharacter[nWarrior], apCharacter[nWizard]);
+			if ((apCharacter[nWarrior] == nullptr) || ((apCharacter[nWizard] == nullptr)))
+			{//NULLチェック
+				printf("\n ***** [Error] nullptrです。 *****");
+				break;
+			}
+
+			/* nullptrではない場合 */
+
+			Battle(apCharacter[nWarrior], apCharacter[nWizard]);	//戦闘
+			Release(apCharacter[nWarrior], apCharacter[nWizard]);	//解放
 			break;
 	
 		case PROCESS::FINISH: /* 終了 */
-			apCharacter[nWarrior]->Uninit();	//戦士
-			apCharacter[nWizard]->Uninit();		//魔法使い
-
-			//終了フラグを立てる
-			bFinish = true;
+			bFinish = true;	//終了フラグを立てる
 			break;
 	
 		case PROCESS::NONE: /* その他 */
@@ -185,6 +179,7 @@ void Battle(CCharacter* pWarrior, CCharacter* pWizard)
 	{
 		if (pWarrior->GetHp() <= 0)
 		{//戦士のHPが0になったとき
+			printf("\n Win! [ 魔法使い ]");
 			break;	//戦闘終了
 		}
 
@@ -200,6 +195,7 @@ void Battle(CCharacter* pWarrior, CCharacter* pWizard)
 
 		if (pWizard->GetHp() <= 0)
 		{//魔法使いのHPが0になったとき
+			printf("\n Win! [ 戦士 ]");
 			break;	//戦闘終了
 		}
 
@@ -212,6 +208,29 @@ void Battle(CCharacter* pWarrior, CCharacter* pWizard)
 
 		//画面をクリア
 		system("cls");
+	}
+}
+
+//---------------------------------------------------
+//解放
+//---------------------------------------------------
+void Release(CCharacter* pWarrior, CCharacter* pWizard)
+{
+	pWarrior->Uninit();	//戦士
+	pWizard->Uninit();	//魔法使い
+
+	if (pWarrior != nullptr)
+	{//NULLチェック
+		//メモリの解放
+		delete pWarrior;
+		pWarrior = nullptr;
+	}
+
+	if (pWizard != nullptr)
+	{//NULLチェック
+		//メモリの解放
+		delete pWizard;
+		pWizard = nullptr;
 	}
 }
 }

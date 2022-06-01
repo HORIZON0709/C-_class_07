@@ -58,7 +58,7 @@ CCharacter* CCharacter::Create(JOB job)
 		assert(false);
 	}
 
-	/* nullptr‚Å‚Í‚È‚¢ */
+	/* nullptr‚Å‚Í‚È‚¢ê‡ */
 
 	//‰Šú‰»
 	pCharacter->Init();

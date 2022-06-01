@@ -27,6 +27,7 @@ public: /* オーバーライド関数 */
 
 private: /* メンバ変数 */
 	int m_nWpnDurability;	//武器耐久力
+	int m_nAtkHalf;			//攻撃力(半減)
 };
 
 #endif

@@ -31,6 +31,7 @@ CWizard::CWizard()
 {
 	//メンバ変数をクリア
 	m_nMp = 0;
+	m_nAtkHalf = 0;
 }
 
 //===================================================
@@ -46,15 +47,13 @@ CWizard::~CWizard()
 //===================================================
 void CWizard::Init()
 {
-	//乱数
-	srand((unsigned)time(NULL));
-
 	//ステータスの設定
 	SetHp(rand() % 50 + 50);
 	SetAttack(rand() % 5 + 5);
 
 	//メンバ変数を初期化
 	m_nMp = rand() % 6 + 2;
+	m_nAtkHalf = (GetAttack() / 2);
 }
 
 //===================================================
@@ -72,18 +71,7 @@ void CWizard::Output()
 //===================================================
 void CWizard::Uninit()
 {
-	int nWizard = 1;	//魔法使い
-
-	if (m_apCharacter[nWizard] == nullptr)
-	{//NULLチェック
-		return;
-	}
-
-	/* nullptrではない */
-
-	//メモリの解放
-	delete m_apCharacter[nWizard];
-	m_apCharacter[nWizard] = nullptr;
+	
 }
 
 //===================================================
@@ -92,7 +80,7 @@ void CWizard::Uninit()
 void CWizard::Attack(CCharacter* pTarget)
 {
 	//メッセージ
-	printf("\n 魔法使いの攻撃！相手に[ %d ]のダメージ！", GetAttack());
+	printf("\n 魔法使いの攻撃！戦士に[ %d ]のダメージ！", GetAttack());
 
 	pTarget->BeAttacked(GetAttack());	//相手にダメージを与える
 
@@ -102,12 +90,11 @@ void CWizard::Attack(CCharacter* pTarget)
 	}
 
 	//メッセージ
-	printf("\n 残りのMP : [ %d ]", m_nMp);
+	printf(" / 残りのMP : [ %d ]", m_nMp);
 
 	if (m_nMp <= 0)
 	{//MPが0以下になったとき
-		int nAtkHalf = (GetAttack() / 2);	//攻撃力半減
-		SetAttack(nAtkHalf);	//攻撃力の設定
+		SetAttack(m_nAtkHalf);	//半減した攻撃力を設定
 	}
 }
 
@@ -120,8 +107,13 @@ void CWizard::BeAttacked(const int nDamage)
 
 	nHp -= nDamage;	//受けたダメージ分減らす
 
-	SetAttack(nHp);	//残りのHPを設定する
+	if (nHp < 0)
+	{//マイナスになったら
+		nHp = 0;	//0に設定
+	}
+
+	SetHp(nHp);	//残りのHPを設定する
 
 	//表示
-	printf("\n 残りHP : [%d]",GetHp());
+	printf("\n 魔法使い … 残りHP : [%d]",GetHp());
 }

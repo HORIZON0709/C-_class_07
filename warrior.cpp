@@ -13,7 +13,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include <assert.h>
 
 //********************************
@@ -31,6 +30,7 @@ CWarrior::CWarrior()
 {
 	//メンバ変数をクリア
 	m_nWpnDurability = 0;
+	m_nAtkHalf = 0;
 }
 
 //===================================================
@@ -46,15 +46,13 @@ CWarrior::~CWarrior()
 //===================================================
 void CWarrior::Init()
 {
-	//乱数
-	srand((unsigned)time(NULL));
-	
 	//ステータスの設定
 	SetHp(rand() % 50 + 50);
 	SetAttack(rand() % 5 + 5);
 
 	//メンバ変数を初期化
 	m_nWpnDurability = rand() % 4 + 1;
+	m_nAtkHalf = (GetAttack() / 2);
 }
 
 //===================================================
@@ -72,18 +70,7 @@ void CWarrior::Output()
 //===================================================
 void CWarrior::Uninit()
 {
-	int nWarrior = 0;	//戦士
-
-	if (m_apCharacter[nWarrior] == nullptr)
-	{//NULLチェック
-		return;
-	}
-
-	/* nullptrではない */
-
-	//メモリの解放
-	delete m_apCharacter[nWarrior];
-	m_apCharacter[nWarrior] = nullptr;
+	
 }
 
 //===================================================
@@ -92,7 +79,7 @@ void CWarrior::Uninit()
 void CWarrior::Attack(CCharacter* pTarget)
 {
 	//メッセージ
-	printf("\n 戦士の攻撃！相手に[ %d ]のダメージ！", GetAttack());
+	printf("\n 戦士の攻撃！魔法使いに[ %d ]のダメージ！", GetAttack());
 
 	pTarget->BeAttacked(GetAttack());	//相手にダメージを与える
 
@@ -102,12 +89,11 @@ void CWarrior::Attack(CCharacter* pTarget)
 	}
 
 	//メッセージ
-	printf("\n 残りの武器耐久力 : [ %d ]", m_nWpnDurability);
+	printf(" / 残りの武器耐久力 : [ %d ]", m_nWpnDurability);
 
 	if (m_nWpnDurability <= 0)
 	{//武器耐久力が0以下になったとき
-		int nAtkHalf = (GetAttack() / 2);	//攻撃力半減
-		SetAttack(nAtkHalf);	//攻撃力の設定
+		SetAttack(m_nAtkHalf);	//半減した攻撃力を設定
 	}
 }
 
@@ -120,8 +106,13 @@ void CWarrior::BeAttacked(const int nDamage)
 
 	nHp -= nDamage;	//受けたダメージ分減らす
 
-	SetAttack(nHp);	//残りのHPを設定する
+	if (nHp < 0)
+	{//マイナスになったら
+		nHp = 0;	//0に設定
+	}
+
+	SetHp(nHp);	//残りのHPを設定する
 
 	//表示
-	printf("\n 残りHP : [%d]", GetHp());
+	printf("\n 戦士 … 残りHP : [%d]", GetHp());
 }

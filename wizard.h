@@ -26,7 +26,8 @@ public: /* オーバーライド関数 */
 	void BeAttacked(const int nDamage)override;	//攻撃を受ける
 
 private: /* メンバ変数 */
-	int m_nMp;	//MP
+	int m_nMp;		//MP
+	int m_nAtkHalf;	//攻撃力(半減)
 };
 
 #endif

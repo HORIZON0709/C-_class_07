@@ -45,8 +45,6 @@ public: /* メンバ関数 */
 	void SetAttack(const int nAttack);	//攻撃力を設定
 
 protected: /* メンバ変数 */
-	CCharacter* m_apCharacter[MAX_CHARACTER];	//ポインタ
-private:
 	int m_nHp;		//HP
 	int m_nAttack;	//攻撃力
 };
